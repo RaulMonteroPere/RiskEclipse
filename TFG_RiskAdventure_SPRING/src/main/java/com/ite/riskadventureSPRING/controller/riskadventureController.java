@@ -1,14 +1,20 @@
-package com.ite.riskadventureSPRING.controller;
+ package com.ite.riskadventureSPRING.controller;
 
 
 	
 	import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-	import org.springframework.beans.factory.annotation.Autowired;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
 import org.springframework.stereotype.Controller;
 	import org.springframework.ui.Model;
 import org.springframework.web.bind.WebDataBinder;
@@ -21,23 +27,36 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.servlet.view.RedirectView;
 
+
 import com.ite.riskadventureSPRING.modelo.beans.Empresa;
 import com.ite.riskadventureSPRING.modelo.beans.Evento;
 import com.ite.riskadventureSPRING.modelo.beans.Experiencia;
+import com.ite.riskadventureSPRING.modelo.beans.Perfile;
 import com.ite.riskadventureSPRING.modelo.beans.Provincia;
 import com.ite.riskadventureSPRING.modelo.beans.Tipo;
+import com.ite.riskadventureSPRING.modelo.beans.Usuario;
+
 import com.ite.riskadventureSPRING.modelo.dao.IntEmpresaDao;
 import com.ite.riskadventureSPRING.modelo.dao.IntEventoDao;
 import com.ite.riskadventureSPRING.modelo.dao.IntExperienciaDao;
+import com.ite.riskadventureSPRING.modelo.dao.IntPerfilDao;
 import com.ite.riskadventureSPRING.modelo.dao.IntProvinciaDao;
+import com.ite.riskadventureSPRING.modelo.dao.IntReservaDao;
 import com.ite.riskadventureSPRING.modelo.dao.IntTipoDao;
+import com.ite.riskadventureSPRING.modelo.dao.IntUsuarioDao;
 import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
+import javax.servlet.ServletException;
+import javax.servlet.annotation.WebServlet;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 	
-
-	@Controller
 	@RequestMapping("/riskadventure")
-	public class riskadventureController {
+	@Controller
+	
+	public class riskadventureController  {
 		@Autowired
 		IntEmpresaDao edao;
 		@Autowired
@@ -48,17 +67,99 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 		IntExperienciaDao exdao;
 		@Autowired
 		IntProvinciaDao pdao;
+		@Autowired
+		IntUsuarioDao udao;
+		@Autowired
+		IntPerfilDao pedao;
+	
 		
-		//Controlador de index--------------------------------------
+		//Login
+		
+		//Controlador pagina inicio-------------------------------------
+				@GetMapping("/inicio")
+				public String ini() {
+					
+					
+					return "inicio";
+					
+				}
+				@GetMapping("/login")
+				public String login() {
+					
+					
+					return "formLogin";
+					
+				}
 		@GetMapping("/index")
-		public String inicio(Model model) {
-			model.addAttribute("mensaje","Risk Adventure ");
+		public String procesarLogin(Authentication aut, Model model, HttpSession misesion) {
+	
+			System.out.println("usuario : " + aut.getName());
+			System.out.println();
+			Usuario usuario=	udao. usuarioPorUser(aut.getName());
+			for (GrantedAuthority ele: aut.getAuthorities())
+				System.out.println("ROL : " + ele.getAuthority());
 			
-			return "index";
+			model.addAttribute("mensaje", aut.getAuthorities());
+			misesion.setAttribute("usuario",usuario);
+			
+			return "inicio";
+		}
+		
+		//logout
+		@GetMapping("/logout")
+		public String logout(HttpServletRequest request) {
+			
+				SecurityContextLogoutHandler logoutHandler=new SecurityContextLogoutHandler();
+				logoutHandler.logout(request,null,null);
+			System.out.println("te has deslogado");
+			return "redirect:/riskadventure/inicio";
 			
 		}
 		
+		//Controlador de registro--------------------------------------
+		@GetMapping("/registro")
+		public String mostrarRegistro(Model model) {
+			
+			
+			return "registro";
+			
+		}
+		
+		@PostMapping("/registro")
+		public String registro(RedirectAttributes ratt, Usuario usuario ) {
+			String mensajeAlta;
+			System.out.println(usuario);
+			usuario.setEnabled(1);
+			Date fechaRegistro=new Date();
+			usuario.setFechaRegistro(fechaRegistro);
+			usuario.setPassword("{noop}"+usuario.getPassword());
+			List<Perfile> lista=new ArrayList<Perfile>();
+			lista.add(new Perfile(2,"WEB"));
+			
+			usuario.setPerfiles(lista);
+			int registrado=udao.insertarUsuario(usuario);
+			System.out.println(registrado);
+			if(registrado==1) {
+				mensajeAlta="Se ha registrado correctamente.<br> Loguese para acceder a sus reservas";
+				System.out.println(mensajeAlta);
+				ratt.addFlashAttribute("mensajeAlta", mensajeAlta);
+				return "redirect:/riskadventure/login"; 
+			}else {
+				
+				mensajeAlta="No se ha registrado,intentelo de nuevo";
+				System.out.println(mensajeAlta);
+				ratt.addFlashAttribute("mensajeAlta", mensajeAlta);
+				return "registro";
+				
+			}
+			
+			
+		}
+		
+		
+		
 		//controladores de landings---------------------------------
+	
 		@GetMapping("/experiencias")
 		public String inicio1(Model model) {
 			model.addAttribute("mensaje","Risk Adventure ");
@@ -68,10 +169,10 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 		}
 		
 		@GetMapping("/tipoAgua")
-		public String empresaPorExperienciaAgua(Model model,@RequestParam(name = "idExperiencia") int idExperiencia ) {
-			model.addAttribute("mensaje","Risk Adventure ");
+		public String empresaPorExperienciaAgua(RedirectAttributes ratt,@RequestParam(name = "idExperiencia") int idExperiencia ) {
+			ratt.addFlashAttribute("mensaje","Risk Adventure ");
 			List<Empresa> listaTipo = edao.verPorExperiencia(idExperiencia);
-			model.addAttribute("listaTipoAgua", listaTipo);
+			ratt.addFlashAttribute("listaTipoAgua", listaTipo);
 			
 			return "redirect:/riskadventure/agua";
 			
@@ -83,20 +184,16 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 			model.addAttribute("provincias",provincias);
 			model.addAttribute("experiencias",experiencias);
 			
-			
 			return "agua";
 			
 		}
 		
 		@PostMapping("/aguaProvincia")
 		public String verAguaProvincia(RedirectAttributes ratt,  @RequestParam("idProvincia") int idProvincia, @RequestParam("idExperiencia") int idExperiencia) {
-			
 			List<Empresa> empresa=edao.verPorExperienciaProvincia(idProvincia, idExperiencia);
-			
 			ratt.addFlashAttribute("empresasProvinciaExperiencia",empresa);
-			
-			
-			 return "redirect:/riskadventure/agua"; 
+
+			return "redirect:/riskadventure/agua"; 
 			
 		}
 		
@@ -104,10 +201,10 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 		
 		
 		@GetMapping("/tipoAire")
-		public String empresaPorExperienciaAire(Model model,@RequestParam(name = "idExperiencia") int idExperiencia ) {
-			model.addAttribute("mensaje","Risk Adventure ");
+		public String empresaPorExperienciaAire(RedirectAttributes ratt,@RequestParam(name = "idExperiencia") int idExperiencia ) {
+			ratt.addFlashAttribute("mensaje","Risk Adventure ");
 			List<Empresa> listaTipo = edao.verPorExperiencia(idExperiencia);
-			model.addAttribute("listaTipoAire", listaTipo);
+			ratt.addFlashAttribute("listaTipoAire", listaTipo);
 			
 			return "redirect:/riskadventure/aire";
 		}
@@ -119,33 +216,17 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 			model.addAttribute("provincias",provincias);
 			model.addAttribute("experiencias",experiencias);
 			
-			
 			return "aire";
 			
 		}
 		@PostMapping("/aireProvincia")
 		public String verAireProvincia(RedirectAttributes ratt,  @RequestParam("idProvincia") int idProvincia, @RequestParam("idExperiencia") int idExperiencia) {
-			
 			List<Empresa> empresa=edao.verPorExperienciaProvincia(idProvincia, idExperiencia);
-			
 			ratt.addFlashAttribute("empresasProvinciaExperiencia",empresa);
-			
 			
 			 return "redirect:/riskadventure/aire"; 
 			
 		}
-		
-		
-		
-		
-		@GetMapping("/ofertas")
-		public String inicio22(Model model) {
-			model.addAttribute("mensaje","Risk Adventure ");
-			
-			return "ofertas";
-			
-		}
-		
 		
 		
 		@GetMapping("/tipoTierra")
@@ -159,24 +240,21 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 		}
 		@GetMapping("/tierra")
 		public String inicio4(Model model) {
-			
 			List <Provincia> provincias=pdao.verTodasProvincias();
 			List <Experiencia> experiencias=exdao.verTodasExperiencias();
 			model.addAttribute("provincias",provincias);
 			model.addAttribute("experiencias",experiencias);
+			
 			return "tierra";
 			
 		}
 		//Por Post, recogemos las respuestas de provincia y cargo manualmente el id de Tierra.Provincia es un select
 		@PostMapping("/tierraProvincia")
 		public String verTierraProvincia(RedirectAttributes ratt,  @RequestParam("idProvincia") int idProvincia, @RequestParam("idExperiencia") int idExperiencia) {
-			
 			List<Empresa> empresa=edao.verPorExperienciaProvincia(idProvincia, idExperiencia);
-			
 			ratt.addFlashAttribute("empresasProvinciaExperiencia",empresa);
 			
-			
-			 return "redirect:/riskadventure/tierra"; 
+			return "redirect:/riskadventure/tierra"; 
 			
 		}
 		
@@ -187,6 +265,16 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 			return "articulos";
 			
 		}
+		
+		@GetMapping("/ofertas")
+		public String inicio22(Model model) {
+			model.addAttribute("mensaje","Risk Adventure ");
+			
+			return "ofertas";
+			
+		}
+		
+		
 		@GetMapping("/detalleOferta")
 		public String detalleOferta(Model model,@RequestParam(name = "idEvento") int idEvento ) {
 			model.addAttribute("mensaje","Risk Adventure ");
@@ -260,13 +348,7 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 			return "eventos";
 			
 		}
-		@GetMapping("/login")
-		public String inicio12(Model model) {
-			model.addAttribute("mensaje","Risk Adventure ");
-			
-			return "login";
-			
-		}
+		
 		@GetMapping("/nosotros")
 		public String inicio13(Model model) {
 			model.addAttribute("mensaje","Risk Adventure ");
@@ -288,13 +370,7 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 			return "politica_privacidad";
 			
 		}
-		@GetMapping("/registro")
-		public String inicio16(Model model) {
-			model.addAttribute("mensaje","Risk Adventure ");
-			
-			return "registro";
-			
-		}
+		
 		@GetMapping("/vermasblog")
 		public String inicio17(Model model) {
 			model.addAttribute("mensaje","Risk Adventure ");
@@ -340,7 +416,7 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 			return "nuevoevento";
 		}
 		
-		
+		//Alta o insert
 		//Por Post, recojo las respuestas del formulario una vez relleno
 		@PostMapping("/create")
 		public /*RedirectView*/String altaEvento(Model model,RedirectAttributes ratt, Evento evento, @RequestParam("efechaInicio") @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio) {
@@ -360,7 +436,7 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 				System.out.println(mensajeinsert);
 			}
 			
-			model.addAttribute("mensajeinsert", mensajeinsert);
+			ratt.addFlashAttribute("mensajeinsert", mensajeinsert);
 			 return "redirect:/riskadventure/admin"; 
 			/*return new RedirectView("/riskadventure/activos");*/
 		}
@@ -392,11 +468,14 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 		
 		
 		
-		//Edita el evento seleccionado con el id que le pasemos
+		//Pasa los datos del objeto a editar al formulario
 		@GetMapping("/editar/{id}")
 		public String editarEvento(Model model, @PathVariable(name="id") int  idEvento) {
 			String mensajeupdate;
-			
+			List<Tipo> listadoTipos = tdao.verTodos();
+			model.addAttribute("listadoTipos", listadoTipos);
+			List<Empresa> listadoEmpresas=edao.verTodasEmpresas();
+			model.addAttribute("listadoEmpresas",listadoEmpresas);
 			Evento evento = evdao.mostrarEvento(idEvento);
 			
 			if(evento == null) {
@@ -404,8 +483,31 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 			}
 			
 			model.addAttribute("evento", evento);
-			return "evento";
+			return "formEvento";
 		}
+		//Recibimos los datos del objeto modificado en el formulario y lo actualiza en la bbdd
+		@PostMapping("/modificar")
+		public String procesarFormularioEditar(RedirectAttributes ratt,Evento evento, @RequestParam("efechaInicio") @DateTimeFormat(pattern = "yyyy-MM-dd") Date fechaInicio ) {
+			
+			String mensajeupdate;
+			evento.setFechaInicio(fechaInicio);
+			int modificado=evdao.modificarEvento(evento);
+			
+			if(modificado == 1) {
+				mensajeupdate = "<span style=\"color: green;\">Se ha modificado el evento</span>";
+				System.out.println(mensajeupdate);
+			} else {
+				mensajeupdate = "<span style=\"color: red;\">Ha habido un error al intentar modificar el evento<span>";
+				System.out.println(mensajeupdate);
+			}
+				
+			ratt.addFlashAttribute("mensajeupdate", mensajeupdate);
+				
+			
+			return "redirect:/riskadventure/admin";				 
+			 
+		}
+		
 		//Clase que formatea la fecha para que al traerla de un form no de error
 		public void initBinder(WebDataBinder binder) {
 			SimpleDateFormat sdf= new SimpleDateFormat("yyyy-MM-dd");
@@ -413,6 +515,7 @@ import com.ite.riskadventureSPRING.modelo.dao.TipoDaoImpl;
 			binder.registerCustomEditor(Date.class, new CustomDateEditor(sdf,false));
 			
 		}
+		
 		
 		
 		

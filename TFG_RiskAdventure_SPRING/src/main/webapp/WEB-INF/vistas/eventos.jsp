@@ -32,7 +32,8 @@
           <div class="row" id="icon">
               <div id="iconos" class="col-md-12 col-xs-12 ">
                 <a href="carrito"><i class="fas fa-ticket-alt" id="carrito" title="reservas"></i></a>
-                <a href="login.php"><i class="fas fa-user" id="login" title="login"></i></a>
+                <a href="/riskadventure/login"><i class="fas fa-user" id="login" title="login"></i>${usuario.username}</a>
+                <a href="/riskadventure/logout"><i class="fas fa-sign-out-alt" id="logout" title="logout"></i></a>
                 <i class="fas fa-search" id="buscar" title="buscar"></i>
               </div>
           </div>
@@ -56,7 +57,7 @@
                   otro elemento que se pueda ocultar al minimizar la barra -->
                   <div class="collapse navbar-collapse navbar-ex1-collapse navbar-right">
                     <ul class="nav navbar-nav">
-                      <li><a id="home" href="index">HOME</a></li>
+                      <li><a id="home" href="inicio">HOME</a></li>
                       <li class="dropdown">
 				        <a href="experiencias" class="dropdown-toggle" data-toggle="dropdown">
 				          EXPERIENCIAS<b class="caret"></b>
@@ -92,6 +93,38 @@
         
               
          <!-- SECTION-->
+         <!-- buscador oculto -->
+   		<div id="ctn-bars-search">
+    			<input type="text" id="inputSearch"  placeholder="¿Qué deseas buscar?">
+   		</div>        	
+        
+        <ul id="listaSearch">
+        	<li><a href="ofertas"><i class="fas fa-search" ></i>OFERTAS</a></li>
+        	<li><a href="contacto"><i class="fas fa-search" ></i>CONTACTO</a></li>
+        	<li><a href="experiencias"><i class="fas fa-search" ></i>EXPERIENCIA</a></li>
+        	<li><a href="nosotros"><i class="fas fa-search" ></i>NOSOTROS</a></li>
+        	<li><a href="blog"><i class="fas fa-search" ></i>BLOG</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>PACKS</a></li>
+        	<li><a href="experiencias"><i class="fas fa-search" ></i>RESERVAS</a></li>
+        	<li><a href="eventos"><i class="fas fa-search" ></i>EMPRESA</a></li>
+        	<li><a href="eventos"><i class="fas fa-search" ></i>EVENTOS</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>GRUPOS</a></li>
+        	<li><a href="login"><i class="fas fa-search" ></i>LOGIN</a></li>
+        	<li><a href="registro"><i class="fas fa-search" ></i>REGISTRO</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>FAMILIAS</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>DESPEDIDAS</a></li>
+        	<li><a href="tierra"><i class="fas fa-search" ></i>TIERRA</a></li>
+        	<li><a href="agua"><i class="fas fa-search" ></i>AGUA</a></li>
+        	<li><a href="aire"><i class="fas fa-search" ></i>AIRE</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>PAREJAS</a></li>
+        	<li><a href="vermasblog"><i class="fas fa-search" ></i>ARTICULOS</a></li>
+        	<li><a href="politica_privacidad"><i class="fas fa-search" ></i>POLÍTICA</a></li>
+        	<li><a href="aviso_legal"><i class="fas fa-search" ></i>AVISO</a></li>
+        	<li><a href="cookies"><i class="fas fa-search" ></i>COOKIES</a></li>
+        	
+        </ul>
+        <div id="cover-ctn-search">
+        </div>
         <!-- parte central eventos-->
         <section class="row">
             <!-- imagen eventos team building-->
@@ -118,11 +151,11 @@
         <section class="row">
             
             <!-- imagen partner escapada rural-->
-            <div class="col-md-3 col-xs-12 col-xm-12" id="teamb">
+            <div class="col-md-6" id="teamb">
                 <img src="../imagenes/footer_escapada_rural.jpg" alt="partner escapada rural eventos empresa">
             </div>
             <!-- imagen partner decathlon -->
-            <div class="col-md-2 col-xs-12 col-xm-12" id="decathlon">
+            <div class="col-md-6" id="decathlon">
                 <img src="../imagenes/footer_decathlon.png" alt="incentive day eventos empresa"
                     title="imagen decathlon eventos empresa">
             </div>
@@ -157,12 +190,12 @@
         <section class="row">
             
            <!-- imagen partner merrell-->
-           <div class="col-md-3 col-xs-12 col-xm-12" id="merrell">
-                <img src="../imagenes/merrell.svg" alt="partner merrell eventos empresa">
+           <div class="col-md-6" id="merrell">
+                <img src="../imagenes/merrell.svg" alt="partner merrell">
             </div>
             <!-- imagen partner the north face -->
-            <div class="col-md-2 col-xs-12 col-xm-12" id="north">
-                <img src="../imagenes/thenorthface.jpg" alt="incentive day eventos empresa">
+            <div class="col-md-6" id="north">
+                <img src="../imagenes/thenorthface.jpg" alt="partner nothface">
             </div>
         </section>
         <section class="row">
@@ -173,7 +206,7 @@
 
             <!-- texto eventos empresa  -->
             <div class="col-md-5 col-xs-12 col-xm-12 " id="boton_packs">
-                <div class="evento">Eventos de Empresa</div>
+                <div class="evento">Eventos Empresa</div>
                 <div class="texto3">Conectamos tus necesidades con nuestras ideas, entendemos que todos somos diferentes y que existe un tipo de mensaje para cada persona.
                    Nuestra experiencia con cientos de clientes nos avalan. Jornadas para los mas intrépidos, actividades de aventura y team building con la posibilidad de diseñar un evento totalmente personalizado.
                    ¿Te atreves?.<br><br>
@@ -190,11 +223,11 @@
         <section class="row">
             
             <!-- imagen partner la sportiva -->
-            <div class="col-md-7 col-xs-12 col-xm-12" id="sportiva">
+            <div class="col-md-6" id="sportiva">
                 <img src="../imagenes/la_sportiva.jpg" alt="eventos empresa">
             </div>
              <!-- imagen partner restaurant -->
-             <div class="col-md-2 col-xs-12 col-xm-12" id="grill">
+             <div class="col-md-6" id="grill">
                 <img src="../imagenes/logo_grill.png" alt="incentive day eventos empresa">
             </div>
         </section>

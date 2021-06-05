@@ -30,7 +30,8 @@
           <div class="row" id="icon">
               <div id="iconos" class="col-md-12 col-xs-12 ">
                 <a href="carrito"><i class="fas fa-ticket-alt" id="carrito" title="reservas"></i></a>
-                <a href="login"><i class="fas fa-user" id="login" title="login"></i></a>
+                <a href="/riskadventure/login"><i class="fas fa-user" id="login" title="login"></i>${usuario.username}</a>
+                <a href="/riskadventure/logout"><i class="fas fa-sign-out-alt" id="logout" title="logout"></i></a>
                 <i class="fas fa-search" id="buscar" title="buscar"></i>
               </div>
           </div>
@@ -90,7 +91,38 @@
 
        
        <!-- SECTION-->
-       
+       <!-- buscador oculto -->
+   		<div id="ctn-bars-search">
+    			<input type="text" id="inputSearch"  placeholder="¿Qué deseas buscar?">
+   		</div>        	
+        
+        <ul id="listaSearch">
+        	<li><a href="ofertas"><i class="fas fa-search" ></i>OFERTAS</a></li>
+        	<li><a href="contacto"><i class="fas fa-search" ></i>CONTACTO</a></li>
+        	<li><a href="experiencias"><i class="fas fa-search" ></i>EXPERIENCIA</a></li>
+        	<li><a href="nosotros"><i class="fas fa-search" ></i>NOSOTROS</a></li>
+        	<li><a href="blog"><i class="fas fa-search" ></i>BLOG</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>PACKS</a></li>
+        	<li><a href="experiencias"><i class="fas fa-search" ></i>RESERVAS</a></li>
+        	<li><a href="eventos"><i class="fas fa-search" ></i>EMPRESA</a></li>
+        	<li><a href="eventos"><i class="fas fa-search" ></i>EVENTOS</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>GRUPOS</a></li>
+        	<li><a href="login"><i class="fas fa-search" ></i>LOGIN</a></li>
+        	<li><a href="registro"><i class="fas fa-search" ></i>REGISTRO</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>FAMILIAS</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>DESPEDIDAS</a></li>
+        	<li><a href="tierra"><i class="fas fa-search" ></i>TIERRA</a></li>
+        	<li><a href="agua"><i class="fas fa-search" ></i>AGUA</a></li>
+        	<li><a href="aire"><i class="fas fa-search" ></i>AIRE</a></li>
+        	<li><a href="packs"><i class="fas fa-search" ></i>PAREJAS</a></li>
+        	<li><a href="vermasblog"><i class="fas fa-search" ></i>ARTICULOS</a></li>
+        	<li><a href="politica_privacidad"><i class="fas fa-search" ></i>POLÍTICA</a></li>
+        	<li><a href="aviso_legal"><i class="fas fa-search" ></i>AVISO</a></li>
+        	<li><a href="cookies"><i class="fas fa-search" ></i>COOKIES</a></li>
+        	
+        </ul>
+        <div id="cover-ctn-search">
+        </div>
        <section class="row" id="imagenes" >
           <div class="col-md-12 col-xs-12 col-xm-12" id="agua">
              <img src="../imagenes/mas_aqua.jpg" alt="MÃ¡s experiencias Agua" title="MÃ¡s Agua"></img>
@@ -106,14 +138,15 @@
             <div id="texto" class="col-md-12">
                 <div> Experiencias de <b>aventura en Agua</b>, Mar, R&iacute;os, Lagos,... todas las actividades que tienen que ver
                 con el entorno acu&aacute;tico. Disfruta y sum&eacute;rgete en nuestras experiencias acu&aacute;ticas.
+                Podr&aacute;s ver un listado de las <b>Empresas de Agua </b> que forman parte de <b>Risk Adventure</b> 
+                y contactar directamente con ellas para que puedan realizar una reserva o actividad a tu medida. Todas nuestras 
+                empresas tienen el <b>Sello de Calidad y Seguridad de Risk Adventure.</b>
                 </div>
             </div>
         </section>  
 
         <hr>
 
-
-        <hr>
 
         <article class="row">
             <div class="col-md-12 col-xs-12  " id="div2_1">
@@ -133,15 +166,15 @@
 						<select name="idExperiencia" id="desplExp">
 							
 							<%--el value del option será el id de experiencia igual que el name, que pasaran al request param --%>			
-							<c:forEach var="ex" items="${experiencias}" >
-								<option value="${ex.idExperiencia}">${ex.nombre}</option>
-							</c:forEach>
+							
+								<option value="2">AGUA</option>
+							
 						</select>
 						<br/><br/>
 						<input type="submit" class="boton" value="Ver empresas (POR PROVINCIA)"/>
 				</form>
 
-              	</div>
+              	
 	              	<c:choose>
 				        <c:when test="${empresasProvinciaExperiencia!=null && empresasProvinciaExperiencia.size()!=0}">
 					        <table class="table table-striped table-hover" >
